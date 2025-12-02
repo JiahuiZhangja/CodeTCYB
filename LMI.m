@@ -174,7 +174,9 @@ mu=sdpvar(1,1);
 LMI1=[(Aaug+Aaug')+eye(nx*N),Theta;
      (Theta)',-mu*eye(nw+nq*N)];
 con=[LMI1<=-0.01;P>=0.01;mu>=0.01;];
-optimize(con,mu)
+
+ops = sdpsettings('solver','sdpt3','verbose',1);
+optimize(con,mu,ops);
 
 P1o=value(P1o);P2o=value(P2o);P3o=value(P3o);
 P4o=value(P4o);P5o=value(P5o);P6o=value(P6o);
@@ -190,4 +192,5 @@ L5 = T5*[pinv(P5o)*W5o;zeros(nx-v5,1)];
 L6 = T6*[pinv(P6o)*W6o;zeros(nx-v6,1)];
 
 M1=value(M1);M2=value(M2);M3=value(M3);
+
 M4=value(M4);M5=value(M5);M6=value(M6);
