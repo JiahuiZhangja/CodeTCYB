@@ -5,7 +5,7 @@ clear all
 close all
 %system parameters
 N = 6;%nodes
-A = kron(eye(N),[0 1;0 0]);
+A = kron(eye(N),[-1 0.2132;0 -0.5]);
 B = eye(12);
 C1 = kron([1 0 0 0 0 0],[1 0]);
 C2 = kron([0 1 0 0 0 0],[1 0]);
@@ -194,3 +194,4 @@ L6 = T6*[pinv(P6o)*W6o;zeros(nx-v6,1)];
 M1=value(M1);M2=value(M2);M3=value(M3);
 
 M4=value(M4);M5=value(M5);M6=value(M6);
+
