@@ -180,14 +180,16 @@ P4o=value(P4o);P5o=value(P5o);P6o=value(P6o);
 W1o=value(W1o);W2o=value(W2o);W3o=value(W3o);
 W4o=value(W4o);W5o=value(W5o);W6o=value(W6o);
 
-L1 = T1*[pinv(P1o)*W1o;zeros(nx-v1,v1)];
-L2 = T2*[pinv(P2o)*W2o;zeros(nx-v2,v2)];
-L3 = T3*[pinv(P3o)*W3o;zeros(nx-v3,v3)];
-L4 = T4*[pinv(P4o)*W4o;zeros(nx-v4,v4)];
-L5 = T5*[pinv(P5o)*W5o;zeros(nx-v5,v5)];
-L6 = T6*[pinv(P6o)*W6o;zeros(nx-v6,v6)];
+L1 = T1*[pinv(P1o)*W1o;zeros(nx-v1,nm1)];
+L2 = T2*[pinv(P2o)*W2o;zeros(nx-v2,nm2)];
+L3 = T3*[pinv(P3o)*W3o;zeros(nx-v3,nm3)];
+L4 = T4*[pinv(P4o)*W4o;zeros(nx-v4,nm4)];
+L5 = T5*[pinv(P5o)*W5o;zeros(nx-v5,nm5)];
+L6 = T6*[pinv(P6o)*W6o;zeros(nx-v6,nm6)];
 
 M1=value(M1);M2=value(M2);M3=value(M3);
 M4=value(M4);M5=value(M5);M6=value(M6);
+M4=value(M4);M5=value(M5);M6=value(M6);
+
 
 
