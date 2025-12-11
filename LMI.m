@@ -19,8 +19,8 @@ E = blkdiag(E1,E2,E3,E4,E5,E6);
 
 %dimension
 nx = size(A,1); 
-nm = size(C1,1);
-nq = size(E1,2);
+nm1 = size(C1,1);nm2 = size(C2,1);nm3 = size(C3,1);nm4 = size(C4,1);nm5 = size(C5,1);nm6 = size(C6,1);
+nq1 = size(E1,2);nq2 = size(E2,2);nq3 = size(E3,2);nq4 = size(E4,2);nq5 = size(E5,2);nq6 = size(E6,2);
 nw = size(B,2);
 
 %Laplace matrix
@@ -39,14 +39,12 @@ v1=rank(O1);
 Z1=T1(:,1:v1);
 U1=T1(:,v1+1:nx);
 
-
 O2 = obsv(A,C2);
 [Q2,Sig2,T2t]=svd(O2);
 T2=T2t;
 v2=rank(O2);
 Z2=T2(:,1:v2);
 U2=T2(:,v2+1:nx);
-
 
 O3 = obsv(A,C3);
 [Q3,Sig3,T3t]=svd(O3);
@@ -55,14 +53,12 @@ v3=rank(O3);
 Z3=T3(:,1:v3);
 U3=T3(:,v3+1:nx);
 
-
 O4 = obsv(A,C4);
 [Q4,Sig4,T4t]=svd(O4);
 T4=T4t;
 v4=rank(O4);
 Z4=T4(:,1:v4);
 U4=T4(:,v4+1:nx);
-
 
 O5 = obsv(A,C5);
 [Q5,Sig5,T5t]=svd(O5);
@@ -132,8 +128,8 @@ P1u=eye(nx-v1);P2u=eye(nx-v2);P3u=eye(nx-v3);P4u=eye(nx-v4);P5u=eye(nx-v5);P6u=e
 P1 = blkdiag(P1o,P1u);P2 = blkdiag(P2o,P2u);P3 = blkdiag(P3o,P3u);
 P4 = blkdiag(P4o,P4u);P5 = blkdiag(P5o,P5u);P6 = blkdiag(P6o,P6u);
 
-W1o = sdpvar(v1,nm);W2o = sdpvar(v2,nm);W3o = sdpvar(v3,nm);
-W4o = sdpvar(v4,nm);W5o = sdpvar(v5,nm);W6o = sdpvar(v6,nm);
+W1o = sdpvar(v1,nm1);W2o = sdpvar(v2,nm2);W3o = sdpvar(v3,nm3);
+W4o = sdpvar(v4,nm4);W5o = sdpvar(v5,nm5);W6o = sdpvar(v6,nm6);
 
 M1=sdpvar(nx-v1,nx-v1);M2=sdpvar(nx-v2,nx-v2);M3=sdpvar(nx-v3,nx-v3);
 M4=sdpvar(nx-v4,nx-v4);M5=sdpvar(nx-v5,nx-v5);M6=sdpvar(nx-v6,nx-v6);
@@ -158,25 +154,25 @@ Aaug6=[P6o*A6o-W6o*C6o zeros(v1,nx-v6);
  
 Aaug=blkdiag(Aaug1,Aaug2,Aaug3,Aaug4,Aaug5,Aaug6)+blkdiag(F1,F2,F3,F4,F5,F6)*kron(L,eye(nx))*Tall;
 
-H1=[-W1o*E1;zeros(nx-v1,nq);];
-H2=[-W2o*E2;zeros(nx-v2,nq);];
-H3=[-W3o*E3;zeros(nx-v3,nq);];
-H4=[-W4o*E4;zeros(nx-v4,nq);];
-H5=[-W5o*E5;zeros(nx-v5,nq);];
-H6=[-W6o*E6;zeros(nx-v6,nq);];
+H1=[-W1o*E1;zeros(nx-v1,nq1);];
+H2=[-W2o*E2;zeros(nx-v2,nq2);];
+H3=[-W3o*E3;zeros(nx-v3,nq3);];
+H4=[-W4o*E4;zeros(nx-v4,nq4);];
+H5=[-W5o*E5;zeros(nx-v5,nq5);];
+H6=[-W6o*E6;zeros(nx-v6,nq6);];
 
 H=blkdiag(H1,H2,H3,H4,H5,H6);
 Theta=[H,P*Tall*kron(ones(N,1),B)];
 
-mu=sdpvar(1,1);
+gamma=sdpvar(1,1);
 
 %LMI
 LMI1=[(Aaug+Aaug')+eye(nx*N),Theta;
-     (Theta)',-mu*eye(nw+nq*N)];
-con=[LMI1<=-0.01;P>=0.01;mu>=0.01;];
+     (Theta)',-gamma*eye(nw+nq1+nq2+nq3+nq4+nq5+nq6)];
+con=[LMI1<=-0;P>=0;gamma>=0;];
 
 ops = sdpsettings('solver','sdpt3','verbose',1);
-optimize(con,mu,ops);
+optimize(con,gamma,ops)
 
 P1o=value(P1o);P2o=value(P2o);P3o=value(P3o);
 P4o=value(P4o);P5o=value(P5o);P6o=value(P6o);
@@ -184,14 +180,14 @@ P4o=value(P4o);P5o=value(P5o);P6o=value(P6o);
 W1o=value(W1o);W2o=value(W2o);W3o=value(W3o);
 W4o=value(W4o);W5o=value(W5o);W6o=value(W6o);
 
-L1 = T1*[pinv(P1o)*W1o;zeros(nx-v1,1)];
-L2 = T2*[pinv(P2o)*W2o;zeros(nx-v2,1)];
-L3 = T3*[pinv(P3o)*W3o;zeros(nx-v3,1)];
-L4 = T4*[pinv(P4o)*W4o;zeros(nx-v4,1)];
-L5 = T5*[pinv(P5o)*W5o;zeros(nx-v5,1)];
-L6 = T6*[pinv(P6o)*W6o;zeros(nx-v6,1)];
+L1 = T1*[pinv(P1o)*W1o;zeros(nx-v1,v1)];
+L2 = T2*[pinv(P2o)*W2o;zeros(nx-v2,v2)];
+L3 = T3*[pinv(P3o)*W3o;zeros(nx-v3,v3)];
+L4 = T4*[pinv(P4o)*W4o;zeros(nx-v4,v4)];
+L5 = T5*[pinv(P5o)*W5o;zeros(nx-v5,v5)];
+L6 = T6*[pinv(P6o)*W6o;zeros(nx-v6,v6)];
 
 M1=value(M1);M2=value(M2);M3=value(M3);
-
 M4=value(M4);M5=value(M5);M6=value(M6);
+
 
