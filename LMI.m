@@ -169,7 +169,7 @@ gamma=sdpvar(1,1);
 %LMI
 LMI1=[(Aaug+Aaug')+eye(nx*N),Theta;
      (Theta)',-gamma*eye(nw+nq1+nq2+nq3+nq4+nq5+nq6)];
-con=[LMI1<=-0;P>=0;gamma>=0;];
+con=[LMI1<=-0.01;P>=0.01;gamma>=0.01;];
 
 ops = sdpsettings('solver','sdpt3','verbose',1);
 optimize(con,gamma,ops)
@@ -190,6 +190,4 @@ L6 = T6*[pinv(P6o)*W6o;zeros(nx-v6,nm6)];
 M1=value(M1);M2=value(M2);M3=value(M3);
 M4=value(M4);M5=value(M5);M6=value(M6);
 M4=value(M4);M5=value(M5);M6=value(M6);
-
-
 
